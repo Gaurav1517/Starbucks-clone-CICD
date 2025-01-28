@@ -1,0 +1,64 @@
+#           #######TERRAFORM ###########
+# Ignore the .terraform directory (which contains Terraform's working files)
+.terraform/
+
+# Ignore any .tfstate files (which contain the state of your infrastructure)
+*.tfstate
+
+# Ignore backup files for the .tfstate files
+*.tfstate.backup
+
+# Ignore the crash log created by Terraform after a crash
+crash.log
+
+# Ignore override files that are sometimes created (e.g., terraform.tfvars.json)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore .terraform.lock.hcl (a file for dependency version locking)
+.terraform.lock.hcl
+
+# Ignore the .terraform/plugins directory
+*.pem
+
+#             ###### NODEJS #########
+# Node.js dependencies
+node_modules/
+
+# Build output
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files (for storing sensitive data like API keys, etc.)
+.env
+.env.local
+.env.*.local
+
+# Dependency directories created by npm or yarn (e.g., for locking versions)
+package-lock.json
+yarn.lock
+
+# Mac system files
+.DS_Store
+
+# VSCode or other IDE editor files
+.vscode/
+
+# Jest or other testing coverage folders
+coverage/
+
+# Next.js (if using Next.js for SSR)
+.next/
+
+# Log files
+*.log
+
+# Temporary files
+*.swp
+*.swo
