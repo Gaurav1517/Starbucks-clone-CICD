@@ -1,6 +1,10 @@
 # Deploy Starbucks Clone Application AWS using DevSecOps Approach
 
-![recording](snap/Recording 2025-01-28 174914.mp4)
+<video width="320" height="240" controls>
+  <source src="snap/Recording%202025-01-28%20174914.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 
 ![Starbucks Clone Deployment](https://github.com/user-attachments/assets/6b654f47-9537-4b88-9584-41c760fc49ac)
 
