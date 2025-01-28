@@ -1,5 +1,6 @@
 # Deploy Starbucks Clone Application AWS using DevSecOps Approach
-https://app.eraser.io/workspace/59NJfCay26dUMl5YAlFl?origin=share
+
+![recording](snap/Recording 2025-01-28 174914.mp4)
 
 ![Starbucks Clone Deployment](https://github.com/user-attachments/assets/6b654f47-9537-4b88-9584-41c760fc49ac)
 
