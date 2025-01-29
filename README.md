@@ -501,7 +501,7 @@ Click OK
 
 ## Jenkinsfile
 - **Ref Jenkinsfile**
-```
+
 Ouputs: 
 jenkins pipeline output (stage view pipeline)
 ![pipeline-2](snap/pipeline-2.png)
@@ -517,4 +517,3 @@ email-notification
 
 Application live browse from browser <<public-IP:3000>>
 ![final-snap](snap/final-snap.png)
-
