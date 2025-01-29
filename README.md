@@ -303,7 +303,6 @@ echo "Access Jenkins at: http://$IP_ADDRESS:8080"
    ![jenkins-4](snap/jenkins-4.png)
    ![jenkins-5](snap/jenkins-5.png)
    ![jenkins-6](snap/jenkins-6.png)
-   ![jenkins-7](snap/jenkins-7.png)
    ![jenkins-8](snap/jenkins-8.png)
 2. Unlock Jenkins with the initial password:
    ```bash
