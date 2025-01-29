@@ -72,12 +72,9 @@ https://github.com/user-attachments/assets/0548f82b-c4d6-4ac7-beec-a1e1eb4f1bb2
 </a>
 
 
-## Overview
-Got it! Here's a project description highlighting your use of the **DevSecOps** approach for deploying a **Starbucks clone application** on AWS:
+### Project Description: 
 
----
-
-### Project Description: Starbucks Clone Application Deployment on AWS Using DevSecOps Approach
+### Starbucks Clone Application Deployment on AWS Using DevSecOps Approach
 
 This project demonstrates the deployment of a **Starbucks clone application** on an **AWS EC2** instance using a **DevSecOps** approach, ensuring that security is integrated throughout the entire lifecycle of development, deployment, and operations. The deployment leverages a combination of modern cloud technologies, CI/CD practices, and security tools to ensure the application is not only functional but also secure by design.
 
@@ -118,6 +115,10 @@ This project demonstrates the deployment of a **Starbucks clone application** on
    - **OWASP** security guidelines are integrated into the development process.
    - **Docker Scout** and **Trivy** scan Docker images to detect and fix security vulnerabilities before deployment.
 6. **Deployment**: Once the application passes tests and security checks, it is automatically deployed to the **AWS EC2** instance, making it accessible to users.
+
+---
+## Deployment Stages
+![deployment-stages](snap/deployment-stages.png)
 
 ---
 
@@ -243,7 +244,7 @@ echo "Access Jenkins at: http://$IP_ADDRESS:8080"
    ```bash
    terraform apply
    ```
-  ![](snap/tf-apply.png)
+  ![tf-apply](snap/tf-apply.png)
   ![jenkins-server](snap/jenkins-server.png)
 ---
 
@@ -409,22 +410,9 @@ After saving, Jenkins will have the configured tools available for use in pipeli
 ---
 
 ## Dockerfile
-```bash
-FROM node:18-alpine AS build
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm install --production
-COPY . .
-RUN npm run build
-FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
-RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx.conf /etc/nginx/conf.d
-EXPOSE 3000
-CMD ["nginx", "-g", "daemon off;"]
-
-```
+- **Ref Dockerfile** 
 ---
+
 ## Here’s a step-by-step guide for configuring a shared library in Jenkins based on your requirements:
 
 # Configuring a Shared Library in Jenkins
@@ -498,7 +486,7 @@ node {
 ```
 
 This will call the `hello` function from your shared library and print the message in the Jenkins console output.
-- **Ref Jenkinsfile**
+
 ![shared-lib-1](snap/shared-lib-1.png)
 ![shared-lib-2](snap/shared-lib-2.png)
 ---
@@ -512,166 +500,7 @@ Click OK
 ![pipeline-1](snap/pipeline-1.png)
 
 ## Jenkinsfile
-```groovy
-@Library('Shared') _
-
-pipeline {
-    agent any
-
-    tools {
-        jdk 'jdk17'
-        nodejs 'nodejs'
-    }
-
-    environment {
-        SCANNER_HOME = tool 'sonar-scanner'
-        DOCKER_USERNAME = "${DOCKER_USERNAME}"
-        JOB_NAME_LOWER = env.JOB_NAME.toLowerCase()
-        IMAGE_NAME = "${DOCKER_USERNAME}/${params.PROJECT_NAME.toLowerCase()}"
-        IMAGE_TAG = "${IMAGE_NAME}:${BUILD_NUMBER}"
-    }
-
-    parameters {
-        string(name: 'PROJECT_NAME', defaultValue: 'starbucks', description: 'Name of the project')
-        string(name: 'PROJECT_KEY', defaultValue: 'starbucks', description: 'Unique key for the project')
-        string(name: 'DOCKER_USERNAME', defaultValue: 'gchauhan1517', description: 'Docker Hub username')
-        string(name: 'DOCKER_PASSWORD', defaultValue: 'your-dockerhub-password', description: 'Docker Hub password')
-        string(name: 'DOCKER_IMAGE_NAME', defaultValue: 'your-image-name', description: 'Docker image name')
-        string(name: 'DOCKER_TAG', defaultValue: 'latest', description: 'Docker image tag')
-    }
-
-    stages {
-        stage("clean workspace") {
-            steps {
-                cleanWs()
-            }
-        }
-
-        stage('Git Checkout') {
-            steps {
-                script {
-                    git_scm('https://github.com/Gaurav1517/Starbucks-clone-CICD.git', 'main')
-                }
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            steps {
-                sonarqubeAnalysis(projectName: params.PROJECT_NAME, projectKey: params.PROJECT_KEY)
-            }
-        }
-
-        stage('Quality Gate') {
-            steps {
-                script {
-                    qualityGate(abortPipeline: false, credentialsId: 'sonar-token')
-                }
-            }
-        }
-
-        stage('Install NPM Dependencies') {
-            steps {
-                installNpmDependencies()
-            }
-        }
-
-        stage('OWASP FS SCAN') {
-            steps {
-                owaspScan()
-            }
-        }
-
-        stage('Trivy File Scan') {
-            steps {
-                trivyScan()
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    buildDockerImage(IMAGE_TAG)
-                }
-            }
-        }
-
-        stage('Docker Image Tag') {
-            steps {
-                script {
-                    sh "docker tag ${IMAGE_TAG} ${IMAGE_NAME}:v${BUILD_NUMBER}"
-                    sh "docker tag ${IMAGE_TAG} ${IMAGE_NAME}:latest"
-                }
-            }
-        }
-
-        stage('Docker Scout Image') {
-            steps {
-                script {
-                    try {
-                        dockerScoutScan(IMAGE_NAME)
-                    } catch (Exception e) {
-                        error("Docker Scout scan failed: ${e.message}")
-                    }
-                }
-            }
-        }
-
-        stage('Docker Push to Registry') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'dockerHub-cred', passwordVariable: 'docker_pass', usernameVariable: 'docker_user')]) {
-                        sh "echo ${docker_pass} | docker login -u ${docker_user} --password-stdin"
-                        sh "docker push ${IMAGE_NAME}:latest"
-                    }
-                }
-            }
-        }
-
-        stage('Deploy to Container') {
-            steps {
-                sh "docker run -d --name ${JOB_NAME_LOWER} -p 3000:3000 ${IMAGE_NAME}:latest"
-            }
-        }
-    }
-
-    post {
-    always {
-        script {
-            def jobName = env.JOB_NAME
-            def buildNumber = env.BUILD_NUMBER
-            def pipelineStatus = currentBuild.result ?: 'UNKNOWN'
-            def bannerColor = pipelineStatus == 'SUCCESS' ? 'green' : 'red'
-
-            def body = """<html>
-                            <body>
-                                <div style="border: 4px solid ${bannerColor}; padding: 10px;">
-                                    <h2>${jobName} - Build ${buildNumber}</h2>
-                                    <div style="background-color: ${bannerColor}; padding: 10px;">
-                                        <h3 style="color: white;">Pipeline Status: ${pipelineStatus}</h3>
-                                    </div>
-                                    <p>Check the <a href="${env.BUILD_URL}">console output</a> for more details.</p>
-                                    <p><strong>Build Summary:</strong></p>
-                                    <p>${pipelineStatus == 'SUCCESS' ? 'The build completed successfully!' : 'The build failed. Please check the logs for errors.'}</p>
-                                </div>
-                            </body>
-                          </html>"""
-
-            echo "Sending email to: <email-ID.@gmail.com>"
-            echo "Subject: ${jobName} - Build ${buildNumber} - ${pipelineStatus}"
-
-            emailext (
-                subject: "${jobName} - Build ${buildNumber} - ${pipelineStatus}",
-                body: body,
-                to: '<email-ID.@gmail.com>',
-                from: '<email-ID.@gmail.com>',
-                replyTo: '<email-ID.@gmail.com>',
-                mimeType: 'text/html',
-                attachmentsPattern: 'trivy-fs-report.html'
-            )
-        }
-     }
-    }
-}
+- **Ref Jenkinsfile**
 ```
 Ouputs: 
 jenkins pipeline output (stage view pipeline)
